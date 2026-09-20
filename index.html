@@ -1,0 +1,421 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة امتحانات الدراسات الاجتماعية | الصف الثاني الإعدادي</title>
+  
+  <!-- خطوط Google العربية المتميزة -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Alexandria:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- شاشة الاحتفال عند التفوق -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- شريط الملاحة العلوي -->
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <div class="nav-brand" onclick="App.navigate('home')">
+        <div class="brand-icon">🧭</div>
+        <div class="brand-text">
+          <h1>منصة الدراسات الاجتماعية</h1>
+          <span>الصف الثاني الإعدادي</span>
+        </div>
+      </div>
+
+      <nav>
+        <ul class="nav-links">
+          <li><button class="nav-link-btn active" id="nav-btn-home" onclick="App.navigate('home')">الرئيسية</button></li>
+          <li><button class="nav-link-btn" id="nav-btn-lessons" onclick="App.navigate('lessons')">الدروس</button></li>
+          <li><button class="nav-link-btn" id="nav-btn-leaderboard" onclick="App.showLeaderboard('lesson-1')">قائمة الأوائل</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- 1. واجهة البداية الترحيبية (Home View) -->
+    <section id="view-home" class="view-section active">
+      <div class="hero-card">
+        <div class="hero-banner">
+          <div class="hero-badge-pill">
+            <span>✨</span> العام الدراسي 2026 / 2027 — المنهج المصري
+          </div>
+          <h2 class="hero-title">امتحان الدراسات الاجتماعية</h2>
+          <div class="hero-subtitle">الصف الثاني الإعدادي</div>
+          <p class="hero-instruction">
+            اختر الإجابة الصحيحة لكل سؤال، ثم اضغط على زر إنهاء الامتحان لمعرفة نتيجتك.
+          </p>
+        </div>
+
+        <div class="hero-body">
+          <div class="features-grid">
+            <div class="feature-box">
+              <div class="feature-icon">📚</div>
+              <div class="feature-info">
+                <h4>منصة متعددة الدروس</h4>
+                <p>كل درس يحتوي على اختباره الخاص ولوحة شرف مستقلة للمتفوقين.</p>
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-icon">⏱️</div>
+              <div class="feature-info">
+                <h4>تصحيح فوري وتفاعلي</h4>
+                <p>احصل على نتيجتك فوراً مع تفصيل الإجابات الصحيحة والخاطئة.</p>
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-icon">🏆</div>
+              <div class="feature-info">
+                <h4>لوحة شرف الأوائل</h4>
+                <p>تنافس مع زملائك وادخل قائمة الشرف لكل درس بجهدك وتفوقك.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <button class="btn btn-primary btn-lg" onclick="App.startLessonExam('lesson-1')">
+              <span>🚀</span> ابدأ الامتحان
+            </button>
+            <button class="btn btn-outline btn-lg" onclick="App.navigate('lessons')">
+              <span>📖</span> تصفح الدروس
+            </button>
+            <button class="btn btn-accent btn-lg" onclick="App.showLeaderboard('lesson-1')">
+              <span>🏆</span> قائمة أوائل الدرس الأول
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- 2. واجهة اختيار الدروس (Lessons Dashboard View) -->
+    <section id="view-lessons" class="view-section">
+      <div class="section-header">
+        <span class="section-badge">مقرر الفصل الدراسي</span>
+        <h2>منصة امتحانات الدراسات الاجتماعية</h2>
+        <p>الصف الثاني الإعدادي</p>
+      </div>
+
+      <div class="lessons-grid" id="lessons-cards-container">
+        <!-- يتم توليد بطاقات الدروس ديناميكياً بواسطة JavaScript -->
+      </div>
+    </section>
+
+    <!-- 3. واجهة الامتحان التفاعلية (Exam View) -->
+    <section id="view-exam" class="view-section">
+      <div class="exam-container">
+        
+        <!-- الشريط العلوي للامتحان -->
+        <div class="exam-top-card">
+          <div class="exam-info-header">
+            <div class="exam-lesson-name" id="exam-lesson-title">الدرس الأول</div>
+            <div class="exam-student-badge" id="exam-student-display">الطالب: —</div>
+          </div>
+
+          <div class="exam-progress-wrapper">
+            <div class="progress-track">
+              <div class="progress-fill" id="exam-progress-bar"></div>
+            </div>
+            <div class="progress-text" id="exam-progress-text">السؤال 1 من 10</div>
+          </div>
+        </div>
+
+        <!-- بطاقة السؤال والخيارات -->
+        <div class="question-card">
+          <div class="question-header">
+            <span class="question-num-pill" id="question-badge">سؤال 1</span>
+            <span class="question-status-tag" id="question-status-indicator">غير مجاب</span>
+          </div>
+
+          <div class="question-text" id="question-text-content">
+            نص السؤال هنا...
+          </div>
+
+          <div class="options-list" id="options-container">
+            <!-- تُولد الخيارات هنا -->
+          </div>
+        </div>
+
+        <!-- أزرار التنقل بين الأسئلة -->
+        <div class="exam-nav-bar">
+          <button class="btn btn-outline" id="btn-prev-question" onclick="App.prevQuestion()">
+            <span>→</span> السابق
+          </button>
+
+          <button class="btn btn-accent" id="btn-submit-exam" onclick="App.openSubmitConfirmation()">
+            <span>✓</span> إنهاء الامتحان
+          </button>
+
+          <button class="btn btn-primary" id="btn-next-question" onclick="App.nextQuestion()">
+            التالي <span>←</span>
+          </button>
+        </div>
+
+        <!-- شبكة أرقام الأسئلة السريعة -->
+        <div class="question-grid-card">
+          <div class="grid-card-title">
+            <span>لوحة التنقل السريع بين الأسئلة</span>
+            <span id="grid-answered-counter">0 من 10 تم حلها</span>
+          </div>
+
+          <div class="questions-number-grid" id="question-quick-grid">
+            <!-- أزرار 1 إلى 10 -->
+          </div>
+
+          <div class="grid-legend">
+            <div class="legend-item">
+              <div class="legend-dot answered"></div>
+              <span>تمت الإجابة</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot unanswered"></div>
+              <span>لم تتم الإجابة</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot current"></div>
+              <span>السؤال الحالي</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <!-- 4. واجهة عرض النتيجة (Results View) -->
+    <section id="view-results" class="view-section">
+      <div class="results-card">
+        <div class="results-header-banner">
+          <span class="results-lesson-tag" id="results-lesson-label">الدرس الأول</span>
+          <h2 class="results-student-name" id="results-student-title">الطالب: أحمد محمد</h2>
+          <div class="results-exam-title" id="results-exam-heading">نتيجة امتحان الدرس الأول</div>
+        </div>
+
+        <div class="results-body">
+          <div class="score-circle-wrapper" id="score-circle-element">
+            <div class="score-circle-inner">
+              <span class="score-number" id="result-score-num">9</span>
+              <span class="score-total-label" id="result-total-label">من 10</span>
+            </div>
+          </div>
+
+          <div>
+            <span class="score-percentage-pill" id="result-percentage-display">النسبة: 90%</span>
+          </div>
+
+          <div class="feedback-message-box" id="result-feedback-box">
+            ممتاز! أداء رائع 👏
+          </div>
+
+          <div class="result-stats-grid">
+            <div class="stat-item-card correct">
+              <div class="stat-val" id="stat-correct-count">9</div>
+              <div class="stat-lbl">عدد الإجابات الصحيحة</div>
+            </div>
+
+            <div class="stat-item-card incorrect">
+              <div class="stat-val" id="stat-incorrect-count">1</div>
+              <div class="stat-lbl">عدد الإجابات الخاطئة</div>
+            </div>
+
+            <div class="stat-item-card total">
+              <div class="stat-val" id="stat-percentage-val">90%</div>
+              <div class="stat-lbl">النسبة المئوية</div>
+            </div>
+          </div>
+
+          <div class="results-action-buttons">
+            <button class="btn btn-primary" onclick="App.showReview()">
+              <span>📝</span> مراجعة الإجابات
+            </button>
+            <button class="btn btn-outline" onclick="App.retakeCurrentExam()">
+              <span>🔄</span> إعادة الامتحان
+            </button>
+            <button class="btn btn-outline" onclick="App.navigate('lessons')">
+              <span>📚</span> العودة إلى الدروس
+            </button>
+            <button class="btn btn-accent" onclick="App.showLessonLeaderboardFromResults()">
+              <span>🏆</span> قائمة أوائل الدرس
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. واجهة مراجعة الإجابات (Review Answers View) -->
+    <section id="view-review" class="view-section">
+      <div class="container" style="max-width: 850px;">
+        <div class="review-header-card">
+          <div>
+            <h3 style="font-size: 1.3rem; font-weight: 800; color: var(--primary-dark);" id="review-lesson-title">مراجعة إجابات الدرس الأول</h3>
+            <p style="font-size: 0.9rem; color: var(--neutral-500); margin-top: 4px;" id="review-student-name">الطالب: —</p>
+          </div>
+          <div class="review-summary-chips">
+            <span class="chip chip-success" id="review-correct-chip">9 صحيحة</span>
+            <span class="chip chip-danger" id="review-incorrect-chip">1 خاطئة</span>
+          </div>
+          <div>
+            <button class="btn btn-outline btn-sm" onclick="App.navigate('results')">
+              <span>←</span> العودة إلى النتيجة
+            </button>
+          </div>
+        </div>
+
+        <div class="review-questions-list" id="review-list-container">
+          <!-- تفاصيل كل سؤال مع إجابة الطالب والصحيحة -->
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+          <button class="btn btn-primary btn-lg" onclick="App.navigate('results')">
+            العودة إلى شاشة النتيجة
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. واجهة قائمة الأوائل (Leaderboard View) -->
+    <section id="view-leaderboard" class="view-section">
+      <div class="leaderboard-container">
+        <div class="section-header">
+          <span class="section-badge">لوحة الشرف والتفوق</span>
+          <h2 id="leaderboard-page-title">🏆 قائمة أوائل الدرس الأول</h2>
+          <p>أعلى الدرجات في اختبارات مادة الدراسات الاجتماعية</p>
+        </div>
+
+        <!-- أزرار التبديل المستقلة بين الدروس -->
+        <div class="lesson-tabs-bar" id="leaderboard-tabs-bar">
+          <!-- أزرار الدروس -->
+        </div>
+
+        <!-- منصة التتويج للمراكز الثلاثة الأولى -->
+        <div class="podium-section" id="leaderboard-podium">
+          <!-- المراكز 1، 2، 3 -->
+        </div>
+
+        <!-- جدول الأوائل الكامل -->
+        <div class="leaderboard-table-card">
+          <div class="table-responsive">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th style="width: 90px;">المركز</th>
+                  <th>اسم الطالب</th>
+                  <th style="width: 130px;">الدرجة</th>
+                  <th style="width: 110px;">النسبة</th>
+                  <th style="width: 140px;">التوقيت</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-table-body">
+                <!-- صفوف الطلاب المتفوقين -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+          <button class="btn btn-outline" onclick="App.navigate('lessons')">
+            <span>📖</span> الانتقال إلى قائمة الدروس
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <!-- ==========================================================================
+       النوافذ التفاعلية المنبثقة (Modals)
+       ========================================================================== -->
+
+  <!-- 1. نافذة إدخال اسم الطالب قبل البدء -->
+  <div class="modal-overlay" id="modal-student-name">
+    <div class="modal-box">
+      <div class="modal-icon icon-navy">✍️</div>
+      <h3 class="modal-title">اكتب اسمك لبدء الامتحان</h3>
+      <p class="modal-subtitle" id="modal-exam-target-title">
+        امتحان الدراسات الاجتماعية — الصف الثاني الإعدادي
+      </p>
+
+      <form id="student-name-form" onsubmit="App.handleStartExamSubmit(event)">
+        <div class="modal-form-group">
+          <label class="modal-form-label" for="student-name-input">اسم الطالب</label>
+          <input 
+            type="text" 
+            id="student-name-input" 
+            class="modal-input" 
+            placeholder="اكتب اسمك ثلاثياً أو ثنائياً..." 
+            autocomplete="name"
+            maxlength="50"
+          >
+          <div class="input-error-msg" id="student-name-error">
+            يرجى كتابة اسم الطالب أولاً لبدء الامتحان!
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary" id="btn-confirm-start">
+            <span>🚀</span> ابدأ الامتحان
+          </button>
+          <button type="button" class="btn btn-outline" onclick="App.closeModal('modal-student-name')">
+            إلغاء
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. نافذة تأكيد تسليم الامتحان -->
+  <div class="modal-overlay" id="modal-confirm-submit">
+    <div class="modal-box">
+      <div class="modal-icon icon-warning">⚠️</div>
+      <h3 class="modal-title">تأكيد إنهاء الامتحان</h3>
+      <p class="modal-subtitle" id="confirm-submit-summary-text">
+        هل أنت متأكد من إنهاء الامتحان وتسجيل إجاباتك؟
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-accent" onclick="App.confirmAndCalculateScore()">
+          نعم، إنهاء وعرض النتيجة
+        </button>
+        <button type="button" class="btn btn-outline" onclick="App.closeModal('modal-confirm-submit')">
+          متابعة الحل
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. نافذة تنبيه: الامتحان غير متاح حاليًا -->
+  <div class="modal-overlay" id="modal-notice-unavailable">
+    <div class="modal-box">
+      <div class="modal-icon icon-warning">⏳</div>
+      <h3 class="modal-title">الامتحان غير متاح حاليًا</h3>
+      <p class="modal-subtitle" id="unavailable-lesson-message">
+        الامتحان قيد التجهيز وسيتم إتاحته قريباً لطلاب الصف الثاني الإعدادي.
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" onclick="App.closeModal('modal-notice-unavailable')">
+          حسناً، فهمت
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- التذييل السفلي -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">منصة امتحانات الدراسات الاجتماعية — الصف الثاني الإعدادي</div>
+      <div>مجهزة وفق أحدث مواصفات وزارة التربية والتعليم المصرية 🇪🇬</div>
+    </div>
+  </footer>
+
+  <!-- ملفات الجافاسكريبت بالترتيب الصحيح -->
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
